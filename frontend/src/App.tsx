@@ -24,6 +24,7 @@ import { useStore } from './store'
 import { Button, CreateRepository, Modal } from './ui'
 import { Dashboard, Repositories, Activity, Settings, Guide } from './Workspace'
 import { EntryGate, useSession } from './Entry'
+import { browserMode } from './runtime'
 const Studio = lazy(() => import('./Studio').then((module) => ({ default: module.Studio })))
 
 class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -35,7 +36,11 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
     return this.state.failed ? (
       <div className="recovery">
         <h1>This view could not be opened.</h1>
-        <p>Your saved work remains on the server.</p>
+        <p>
+          {browserMode
+            ? 'Your saved work remains in this browser.'
+            : 'Your saved work remains on the server.'}
+        </p>
         <Button onClick={() => location.assign('/')}>Return to workspace</Button>
       </div>
     ) : (
@@ -161,7 +166,7 @@ function Shell() {
             </button>
             <span className="demo-indicator">
               <i />
-              Connected
+              {browserMode ? 'Browser storage' : 'Connected'}
             </span>
             <button
               className="topbar-plus"
@@ -228,7 +233,7 @@ function Shell() {
           </span>
           <span>
             CustomVCS Studio <b>v2.0</b>
-            <i /> Powered by your Java VCS engine
+            <i /> {browserMode ? 'Saved on this browser' : 'Powered by your Java VCS engine'}
           </span>
         </footer>
       </div>
@@ -237,14 +242,16 @@ function Shell() {
       {help && (
         <Modal title="Your personal workspace" onClose={() => setHelp(false)}>
           <p className="muted">
-            Your private repositories are stored by the Spring Boot server. Only you can access them
-            after signing in.
+            {browserMode
+              ? 'Your repositories and history are saved on this browser. They do not sync to other devices. Export a backup before clearing site data.'
+              : 'Your private repositories are stored by the Spring Boot server. Only you can access them after signing in.'}
           </p>
           <div className="info-box">
             <TerminalWindow size={24} />
             <p>
-              Files, staging, commits, branches and merges are handled by the same Java engine used
-              by the CLI.
+              {browserMode
+                ? 'Create files, stage changes, save commits and work with branches locally. No account or backend connection is required.'
+                : 'Files, staging, commits, branches and merges are handled by the same Java engine used by the CLI.'}
             </p>
           </div>
           <Link to="/guide" className="button primary" onClick={() => setHelp(false)}>
@@ -259,7 +266,11 @@ function Shell() {
             <span>{workspace.name.slice(0, 2).toUpperCase()}</span>
             <div>
               <strong>{workspace.name}</strong>
-              <p>Personal workspace · Demo session</p>
+              <p>
+                {browserMode
+                  ? 'Personal workspace · Browser storage'
+                  : 'Personal workspace · Signed in'}
+              </p>
             </div>
           </div>
           <div className="account-actions">
@@ -271,16 +282,20 @@ function Shell() {
               Getting started
               <BookOpen size={18} />
             </Link>
-            <button
-              className="sign-out"
-              onClick={() => void signOut().catch((error) => notice(error.message))}
-            >
-              Sign out
-              <SignOut size={19} />
-            </button>
+            {!browserMode && (
+              <button
+                className="sign-out"
+                onClick={() => void signOut().catch((error) => notice(error.message))}
+              >
+                Sign out
+                <SignOut size={19} />
+              </button>
+            )}
           </div>
           <p className="account-note">
-            Signing out ends this session. Your repositories and history stay on the server.
+            {browserMode
+              ? 'Anyone using this browser profile can open this workspace. Export your data in Settings to keep a backup.'
+              : 'Signing out ends this session. Your repositories and history stay on the server.'}
           </p>
         </Modal>
       )}

@@ -3,7 +3,7 @@ import test from 'node:test'
 import { createVercelConfig } from './vercel-config.mjs'
 
 test('API proxy takes priority over the SPA fallback and preserves the API path', () => {
-  const config = createVercelConfig('https://backend.example.com/')
+  const config = createVercelConfig('https://backend.example.com/', 'server')
   assert.deepEqual(config.rewrites, [
     { source: '/api/:path*', destination: 'https://backend.example.com/api/:path*' },
     { source: '/(.*)', destination: '/index.html' },
@@ -30,6 +30,12 @@ test('invalid or local deployment targets fail with an actionable error', () => 
     'https://user:password@backend.example.com',
     'https://backend.example.com#fragment',
   ]) {
-    assert.throws(() => createVercelConfig(origin), /CVCS_BACKEND_ORIGIN/)
+    assert.throws(() => createVercelConfig(origin, 'server'), /CVCS_BACKEND_ORIGIN/)
   }
+})
+
+test('browser deployment works without any backend origin', () => {
+  const config = createVercelConfig(undefined)
+  assert.deepEqual(config.rewrites, [{ source: '/(.*)', destination: '/index.html' }])
+  assert.throws(() => createVercelConfig(undefined, 'invalid'), /VITE_CVCS_MODE/)
 })

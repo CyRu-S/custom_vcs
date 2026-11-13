@@ -1793,7 +1793,7 @@ kbd,
   color: var(--blue);
   margin-bottom: 18px;
 }
-.empty h3 {
+.empty :is(h2, h3) {
   font-size: 23px;
   color: var(--ink);
 }

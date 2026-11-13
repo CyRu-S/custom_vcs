@@ -1,24 +1,28 @@
 ﻿# CustomVCS
 
-A Java 25 version control engine built from scratch, with a local Picocli CLI and an authenticated React + Spring Boot workspace. Git does not implement our VCS operations.
+A Java 25 version control engine built from scratch, with a local Picocli CLI and a React workspace. The frontend now opens in standalone browser-storage mode by default; authenticated Spring Boot/PostgreSQL mode remains optional. Git does not implement our VCS operations.
 
 **Start with [the short learning guide](docs/LEARNING-GUIDE.md).** For the everyday backend flow, read `RepositoryVcsController` and `RepositoryVcsService` together. Branch/merge operations, security setup and browser aggregation are separate supporting areas you can read afterward.
 
-Implemented: init, add/unstage, status, commits/history, branches, safe checkout, text diff, three-way merge, conflict resolution and abort. The browser uses real server data; no demo repositories are seeded.
+Implemented in Java: init, add/unstage, status, commits/history, branches, safe checkout, text diff, three-way merge, conflict resolution and abort. Browser mode independently supports file snapshots, staging, commits, branches and conservative file-level merging, with no seeded repositories or backend requests.
 
 - `vcs-core`: framework-free engine and SHA-256 object storage.
 - `vcs-cli`: local commands; no server required.
 - `vcs-server`: sessions, CSRF, private ownership, REST and PostgreSQL metadata.
 - `frontend`: React/TypeScript workspace, file editor, changes, history and merges.
 
-For **Vercel with your existing local PostgreSQL data**, follow
-[the Vercel deployment guide](docs/VERCEL.md). Use Vercel Root Directory `frontend` and
-configure `CVCS_BACKEND_ORIGIN` with your backend's reachable HTTPS tunnel origin.
-The backend and database continue running locally. `compose.local-db.yaml` connects Docker
-to host PostgreSQL; default `compose.yaml` starts a separate Docker database.
-Separate backend and frontend Dockerfiles are supplied alongside the combined Dockerfile.
+For **Vercel**, follow [the deployment guide](docs/VERCEL.md). Use Root Directory `frontend`;
+the default browser mode needs no backend environment variables or tunnel. Data persists only
+in that browser and site origin; export a backup from Settings. Set `VITE_CVCS_MODE=server`
+only when opting back into Java/API mode. Separate backend and frontend Dockerfiles remain
+available. `compose.local-db.yaml` connects Docker to host PostgreSQL; default `compose.yaml`
+starts a separate Docker database.
 
 ## Start locally
+
+For the standalone frontend: `cd frontend`, `npm ci`, then `npm run dev`. No Java or SQL
+server is needed. The instructions below are for optional server mode; set frontend
+environment variable `VITE_CVCS_MODE=server` when following them.
 
 Use JDK 25, Maven 3.9.12, Node 22.12+ and PostgreSQL. Create a database named `customvcs`, copy `.env.example` to `.env`, and supply your credentials. Use unquoted Java properties values and forward slashes for paths. Keep `.env` private.
 

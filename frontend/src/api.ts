@@ -1,3 +1,6 @@
+import { browserMode } from './runtime'
+import { browserApi } from './browser-api'
+
 export type User = { id: string; name: string; email: string }
 type Problem = { detail?: string; errors?: Record<string, string> }
 
@@ -39,6 +42,7 @@ export async function api<T>(
   path: string,
   options: { method?: string; body?: unknown; signal?: AbortSignal } = {},
 ): Promise<T> {
+  if (browserMode) return browserApi<T>(path, options)
   const method = options.method ?? 'GET'
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (options.body !== undefined) headers['Content-Type'] = 'application/json'

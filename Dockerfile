@@ -1,4 +1,6 @@
 FROM node:22-alpine AS web
+ARG VITE_CVCS_MODE=server
+ENV VITE_CVCS_MODE=$VITE_CVCS_MODE
 WORKDIR /build/frontend
 COPY frontend/package*.json ./
 RUN npm ci

@@ -10,6 +10,7 @@ import {
   Trash,
 } from '@phosphor-icons/react'
 import { useStore } from './store'
+import { browserMode } from './runtime'
 import { relative, short, tip } from './model'
 import type { Repository } from './model'
 import { NewBranch } from './Studio'
@@ -156,8 +157,8 @@ export function Branches({ repository: r }: { repository: Repository }) {
           }}
         >
           <p className="muted">
-            Remove this branch pointer. The server refuses deletion if its work has not been merged
-            into your current branch.
+            Remove this branch pointer. Deletion is refused if its work has not been merged into
+            your current branch.
           </p>
           {error && (
             <p className="form-error" role="alert">
@@ -223,7 +224,9 @@ export function MergeWorkbench({ repository: r }: { repository: Repository }) {
           <p>
             {r.merge
               ? `Merging ${r.merge.source} into ${r.current}. Resolve each file, then create the merge commit.`
-              : 'The Java engine compares both branches with their shared ancestor.'}
+              : browserMode
+                ? 'Compare saved file snapshots with their shared ancestor. Files changed on both sides can be resolved here.'
+                : 'The Java engine compares both branches with their shared ancestor.'}
           </p>
         </div>
         <GitMerge size={35} />

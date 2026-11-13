@@ -15,6 +15,7 @@ import {
 import { useStore } from './store'
 import { Button } from './ui'
 import { ApiError } from './api'
+import { browserMode } from './runtime'
 import './entry.css'
 
 const INTRO_KEY = 'customvcs.intro.v1'
@@ -43,6 +44,14 @@ export function EntryGate({ children }: { children: ReactNode }) {
     return (
       <main className="recovery" role="status">
         <h1>Opening your workspace...</h1>
+      </main>
+    )
+  if (browserMode && !user)
+    return (
+      <main className="recovery" role="alert">
+        <h1>Browser storage could not be opened.</h1>
+        <p>{error || 'Allow site storage in your browser, then reload to continue.'}</p>
+        <Button onClick={() => window.location.reload()}>Reload workspace</Button>
       </main>
     )
   const publicPage = location.pathname === '/login' || location.pathname === '/register'

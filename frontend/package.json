@@ -10,6 +10,7 @@
     "lint": "oxlint",
     "test": "playwright test",
     "test:deployment": "node --test deployment/*.test.mjs",
+    "test:browser": "playwright test --config playwright.browser.config.ts",
     "format": "prettier --write src tests *.ts *.json index.html README.md",
     "preview": "vite preview --host 127.0.0.1"
   },

@@ -3,6 +3,7 @@ import type { ReactNode, ButtonHTMLAttributes } from 'react'
 import { ArrowUpRight, Check, Copy, GitBranch, Plus, X } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from './store'
+import { browserMode } from './runtime'
 
 export function Button({
   children,
@@ -31,15 +32,18 @@ export function Empty({
   title,
   description,
   children,
+  headingLevel = 3,
 }: {
   title: string
   description: string
   children?: ReactNode
+  headingLevel?: 2 | 3
 }) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3'
   return (
     <div className="empty">
       <GitBranch size={36} weight="light" />
-      <h3>{title}</h3>
+      <Heading>{title}</Heading>
       <p>{description}</p>
       {children}
     </div>
@@ -131,7 +135,9 @@ export function CreateRepository({ onClose }: { onClose: () => void }) {
         <GitBranch size={30} />
       </div>
       <p className="muted">
-        Create a private repository. Its main branch starts empty, ready for your first file.
+        {browserMode
+          ? 'Create a repository in this browser. Export a backup from Settings to keep a copy.'
+          : 'Create a private repository. Its main branch starts empty, ready for your first file.'}
       </p>
       <form
         noValidate

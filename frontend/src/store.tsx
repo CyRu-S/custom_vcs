@@ -4,6 +4,8 @@ import { Check, X } from '@phosphor-icons/react'
 import type { Repository, Snapshot, Workspace } from './model'
 import { api, ApiError, repositoryPath, resetCsrf } from './api'
 import type { User } from './api'
+import { browserMode } from './runtime'
+import { BROWSER_KEY } from './browser-api'
 
 type Store = {
   workspace: Workspace
@@ -155,6 +157,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (owner === activeUser.current) setLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (!browserMode) return
+    const changed = (event: StorageEvent) => {
+      if (event.key === BROWSER_KEY) void loadPage(0, false).catch(() => {})
+    }
+    window.addEventListener('storage', changed)
+    return () => window.removeEventListener('storage', changed)
+  }, [loadPage])
 
   useEffect(() => {
     setWorkspace((w) => ({ ...w, name: user?.name ?? 'Developer', repositories: [] }))

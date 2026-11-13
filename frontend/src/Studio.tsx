@@ -11,6 +11,7 @@ import {
   Star,
 } from '@phosphor-icons/react'
 import { useStore } from './store'
+import { browserMode } from './runtime'
 import type { Repository } from './model'
 import { Button, Empty, Modal, RepoIcon, Tag } from './ui'
 import { CodeWorkspace } from './Source'
@@ -56,7 +57,7 @@ export function Studio() {
         <span>{r.name}</span>
         <span className="studio-private">
           <i />
-          Private repository
+          {browserMode ? 'Browser repository' : 'Private repository'}
         </span>
       </div>
       <div className="studio-heading">
@@ -246,7 +247,11 @@ function RepositorySettings({ repository: r }: { repository: Repository }) {
       <section className="settings-block">
         <div>
           <h2>Repository information</h2>
-          <p>Metadata lives in PostgreSQL. Files and VCS objects live on the server.</p>
+          <p>
+            {browserMode
+              ? 'Files and history live in this browser. Export a backup in Workspace settings.'
+              : 'Metadata lives in PostgreSQL. Files and VCS objects live on the server.'}
+          </p>
         </div>
         <dl className="info-list">
           <div>
@@ -267,8 +272,9 @@ function RepositorySettings({ repository: r }: { repository: Repository }) {
         <div>
           <h2>Remove repository</h2>
           <p>
-            Permanently delete this repository's working files, objects, and history from the
-            server.
+            {browserMode
+              ? "Permanently delete this repository's files and history from this browser."
+              : "Permanently delete this repository's working files, objects, and history from the server."}
           </p>
         </div>
         <Button variant="danger" onClick={() => setRemove(true)}>
@@ -283,7 +289,9 @@ function RepositorySettings({ repository: r }: { repository: Repository }) {
           }}
         >
           <p className="muted">
-            This permanently deletes the server repository and its history. This cannot be undone.
+            {browserMode
+              ? 'This permanently deletes the browser repository and its history. Export a backup first if you need it.'
+              : 'This permanently deletes the server repository and its history. This cannot be undone.'}
           </p>
           <form
             noValidate

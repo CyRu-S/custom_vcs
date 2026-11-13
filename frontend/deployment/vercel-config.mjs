@@ -1,4 +1,16 @@
-export function createVercelConfig(backendOrigin) {
+export function createVercelConfig(backendOrigin, mode = 'browser') {
+  if (mode !== 'browser' && mode !== 'server') {
+    throw new Error('VITE_CVCS_MODE must be browser or server.')
+  }
+  if (mode === 'browser') {
+    return {
+      framework: 'vite',
+      installCommand: 'npm ci',
+      buildCommand: 'npm run build',
+      outputDirectory: 'dist',
+      rewrites: [{ source: '/(.*)', destination: '/index.html' }],
+    }
+  }
   if (!backendOrigin) {
     throw new Error('Set CVCS_BACKEND_ORIGIN in Vercel to your reachable HTTPS backend origin.')
   }

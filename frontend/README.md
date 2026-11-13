@@ -1,15 +1,19 @@
 ﻿# Connected frontend
 
-React/TypeScript/Vite now calls the authenticated Spring Boot API. Demo repository fixtures and browser demo sessions are retired. Local storage holds only theme and per-user stars; source drafts are scoped in memory. Repositories, history and authentication come from the server.
+React/TypeScript/Vite runs standalone by default. It opens a local profile and stores actual
+browser-created repositories, working files, staging and history in localStorage. No backend,
+database, tunnel, account or password is needed. Data is local to each browser/site origin;
+Settings provides backup export/import. Clearing site data removes the workspace.
 
-Use `npm ci` and `npm run dev` in this directory after starting the backend on port 8080. Vite proxies `/api`; set `CVCS_API_TARGET` to use another backend. Register an account to start with an empty workspace.
+Use `npm ci` and `npm run dev` in this directory to open the standalone frontend.
+To opt into authenticated Java mode, set `VITE_CVCS_MODE=server`, start the backend on 8080,
+and restart Vite. Vite proxies `/api`; `CVCS_API_TARGET` selects another backend.
 
-For Vercel, select branch `main`, Root Directory `frontend`, Node 22.x, and set
-`CVCS_BACKEND_ORIGIN` to your backend's publicly reachable HTTPS origin (without `/api`).
-`vercel.mjs` generates the API proxy and SPA fallback. Your backend can run locally through
-an HTTPS tunnel, using local PostgreSQL. Enable `CVCS_SECURE_COOKIES=true` on that backend.
-See [the Vercel deployment guide](../docs/VERCEL.md) for setup and Docker alternatives.
-Run `npm run test:deployment` to check routing and origin validation.
+For Vercel, select branch `main`, Root Directory `frontend`, and Node 22.x. No backend
+variable is required by default. `vercel.mjs` supplies SPA routing. Only explicit server mode
+requires `CVCS_BACKEND_ORIGIN`, a reachable HTTPS backend, and secure cookies.
+See [the deployment guide](../docs/VERCEL.md). Run `npm run test:deployment` for config checks
+and `npm run test:browser` for standalone browser workflow/accessibility tests.
 
 Use `npm run lint`, `npm run typecheck`, `npm run build` and `npm test`. Playwright needs a disposable backend and creates test accounts/repositories. `CVCS_E2E_URL` targets an already-running combined release or development app.
 

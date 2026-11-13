@@ -1,4 +1,43 @@
-# Vercel frontend with your local PostgreSQL database
+# Deploy the standalone browser frontend
+
+Browser mode is now the default. No backend, database, ngrok or backend URL is required.
+
+1. Import `CyRu-S/custom_vcs` into Vercel, using branch `main`.
+2. Choose Root Directory `frontend`, Vite preset, build command `npm run build`, and
+   output directory `dist`. Use `npm ci` for installation.
+3. Leave `VITE_CVCS_MODE` unset (or set it to `browser`). Remove an old `server` value.
+   `CVCS_BACKEND_ORIGIN` is not needed in browser mode.
+4. Redeploy the latest commit from `main`. Open the site and create a repository.
+
+The local profile opens without sign-in. Files, staging, commits, branches and file-level
+merge resolution run in the browser and persist in localStorage. This is a browser snapshot
+implementation, independent of the Java VCS engine. No passwords or authentication tokens
+are stored. Anyone using the same browser profile can open the workspace.
+
+Data belongs to the exact site origin and browser profile. It does not sync between devices,
+browsers, preview URLs or production domains. Clearing site data removes the workspace.
+Browser storage has limited capacity; a failed save leaves the previously saved data intact.
+Settings provides **Export backup** and **Import browser workspace backup**. Exports include
+every repository, snapshot and staged change. Import adds repositories and rejects duplicate
+IDs instead of overwriting existing work. Back up before clearing browser data.
+
+For local frontend-only development:
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
+
+Checks: `npm run lint`, `npm run build`, `npm run test:deployment`, and `npm run test:browser`.
+The browser suite checks persistence, merges, backup/restore, quota errors, corrupt data,
+keyboard navigation, accessibility and desktop/mobile layouts without an API server.
+
+## Optional: restore the Java backend and local PostgreSQL mode
+
+Set `VITE_CVCS_MODE=server` in Vercel (or the local frontend environment) and redeploy.
+Only this optional mode requires `CVCS_BACKEND_ORIGIN` and the steps below. Docker's combined
+and API-connected frontend builds explicitly use server mode; the backend code is preserved.
 
 The connection is:
 

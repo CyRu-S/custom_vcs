@@ -23,6 +23,8 @@ import { relative, sortedCommits } from './model'
 import type { Repository } from './model'
 import { BranchGraph } from './Graph'
 import { Button, Empty, RepoIcon, SectionTitle, Tag } from './ui'
+import { browserMode } from './runtime'
+import { exportBrowserWorkspace, importBrowserWorkspace } from './browser-api'
 
 export function Dashboard({ onCreate }: { onCreate: () => void }) {
   const { workspace } = useStore()
@@ -37,7 +39,8 @@ export function Dashboard({ onCreate }: { onCreate: () => void }) {
       <div className="welcome">
         <div>
           <p className="eyebrow">
-            <span className="mini-orbit" /> YOUR WORKSPACE, IN SYNC
+            <span className="mini-orbit" />{' '}
+            {browserMode ? 'YOUR WORKSPACE, ON THIS BROWSER' : 'YOUR WORKSPACE, IN SYNC'}
           </p>
           <h1>
             Good to see you, <span>{workspace.name.split(' ')[0]}.</span>
@@ -134,13 +137,16 @@ export function Dashboard({ onCreate }: { onCreate: () => void }) {
             </Link>
             <span className="next-note">
               <i />
-              Private to your account. Saved on the server.
+              {browserMode
+                ? 'Saved on this browser. Export a backup in Settings.'
+                : 'Private to your account. Saved on the server.'}
             </span>
           </section>
         </div>
       ) : (
         <Empty
           title="Your next project belongs here"
+          headingLevel={2}
           description="Create your first repository to start building."
         >
           <Button variant="primary" onClick={onCreate}>
@@ -414,6 +420,8 @@ export function Settings() {
   const [name, setName] = useState(workspace.name),
     [error, setError] = useState(''),
     [saving, setSaving] = useState(false)
+  const [backupError, setBackupError] = useState('')
+  const { reload, notice } = useStore()
   return (
     <div className="page settings-page">
       <div className="page-heading">
@@ -435,7 +443,11 @@ export function Settings() {
           <section className="settings-block" id="profile">
             <div>
               <h2>Your profile</h2>
-              <p>Your verified account identity is used for new commits.</p>
+              <p>
+                {browserMode
+                  ? 'Your display name is used for new browser commits.'
+                  : 'Your verified account identity is used for new commits.'}
+              </p>
             </div>
             <form
               noValidate
@@ -513,27 +525,83 @@ export function Settings() {
             <div>
               <h2>Keep your work close</h2>
               <p>
-                Repositories are stored by the Java server. Theme and starred preferences stay in
-                this browser.
+                {browserMode
+                  ? 'Files, staged changes and commit history are saved in this browser. Clearing site data removes them. Keep an exported backup.'
+                  : 'Repositories are stored by the Java server. Theme and starred preferences stay in this browser.'}
               </p>
             </div>
             <div className="data-actions">
               <div>
-                <h3>Export current view</h3>
+                <h3>{browserMode ? 'Export workspace backup' : 'Export current view'}</h3>
                 <p>
-                  Download the loaded text view as JSON. This is not a complete repository backup.
+                  {browserMode
+                    ? 'Download all browser repositories, files, staging and history as JSON.'
+                    : 'Download the loaded text view as JSON. This is not a complete repository backup.'}
                 </p>
               </div>
               <Button
-                onClick={() => download(JSON.stringify(workspace, null, 2), 'customvcs-view.json')}
+                onClick={() => {
+                  try {
+                    download(
+                      browserMode ? exportBrowserWorkspace() : JSON.stringify(workspace, null, 2),
+                      browserMode ? 'customvcs-browser-backup.json' : 'customvcs-view.json',
+                    )
+                    setBackupError('')
+                  } catch (error) {
+                    setBackupError(
+                      error instanceof Error ? error.message : 'Could not export workspace.',
+                    )
+                  }
+                }}
               >
                 <DownloadSimple size={17} />
-                Export view
+                {browserMode ? 'Export backup' : 'Export view'}
               </Button>
             </div>
+            {browserMode && (
+              <div className="data-actions">
+                <div>
+                  <h3>Restore repositories</h3>
+                  <p>
+                    Import a browser backup. Existing repositories are kept; duplicate IDs are
+                    refused.
+                  </p>
+                  <label className="field">
+                    Import browser workspace backup
+                    <input
+                      type="file"
+                      accept="application/json,.json"
+                      onChange={async (event) => {
+                        const file = event.target.files?.[0]
+                        event.target.value = ''
+                        if (!file) return
+                        try {
+                          if (file.size > 10 * 1024 * 1024)
+                            throw new Error('Choose a backup smaller than 10 MiB.')
+                          importBrowserWorkspace(await file.text())
+                          await reload()
+                          setBackupError('')
+                          notice('Browser repositories restored.')
+                        } catch (error) {
+                          setBackupError(
+                            error instanceof Error ? error.message : 'Could not import workspace.',
+                          )
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+            {backupError && (
+              <p className="form-error" role="alert">
+                {backupError}
+              </p>
+            )}
             <p className="muted">
-              For a complete backup, copy the server's repository data directory together with a
-              PostgreSQL database backup while the server is stopped.
+              {browserMode
+                ? 'Browser storage is limited and belongs to this site and browser profile. Data is not synced, encrypted by this app, or sent to a database.'
+                : "For a complete backup, copy the server's repository data directory together with a PostgreSQL database backup while the server is stopped."}
             </p>
           </section>
         </div>
@@ -621,7 +689,9 @@ export function Guide() {
           </span>
         </div>
         <p>
-          The CLI and server both reuse the Java engine. This browser sends authenticated requests
+          {browserMode
+            ? 'Browser mode uses local snapshots and does not connect to the Java server. The optional server mode sends authenticated requests'
+            : 'The CLI and server both reuse the Java engine. This browser sends authenticated requests'}
           to Spring Boot; no VCS operation is simulated in the browser.
         </p>
       </section>

@@ -12,5 +12,10 @@ export default defineConfig({
   },
   webServer: process.env.CVCS_E2E_URL
     ? undefined
-    : { command: 'npm run dev', url: 'http://127.0.0.1:5173', reuseExistingServer: true },
+    : {
+        command: 'npm run dev',
+        url: 'http://127.0.0.1:5173',
+        reuseExistingServer: true,
+        env: { VITE_CVCS_MODE: 'server' },
+      },
 })
