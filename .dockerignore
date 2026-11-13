@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+**/node_modules
+**/target
+**/dist
+**/test-results
+**/playwright-report
+**/*.log
+data
+tmp
+output
+.learning-backups
+frontend-previous
+.git
+.vscode

@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: customvcs
+      POSTGRES_USER: cvcs
+      POSTGRES_PASSWORD: ${CVCS_DB_PASSWORD:?Set CVCS_DB_PASSWORD in .env}
+    volumes:
+      # PostgreSQL 18 keeps versioned cluster directories below this location.
+      - database:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U cvcs -d customvcs']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  app:
+    image: arpandutta030705/customvcs:latest
+    build: .
+    ports:
+      - '127.0.0.1:8080:8080'
+    environment:
+      CVCS_DB_URL: jdbc:postgresql://database:5432/customvcs
+      CVCS_DB_USERNAME: cvcs
+      CVCS_DB_PASSWORD: ${CVCS_DB_PASSWORD:?Set CVCS_DB_PASSWORD in .env}
+      CVCS_STORAGE_ROOT: /app/data/repositories
+      CVCS_SECURE_COOKIES: ${CVCS_SECURE_COOKIES:-false}
+    volumes:
+      - repositories:/app/data/repositories
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  database:
+  repositories:

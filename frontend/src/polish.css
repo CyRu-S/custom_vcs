@@ -1,0 +1,154 @@
+/* Keep the established layout; make small feedback and navigation states more consistent. */
+.button,
+.icon-button,
+.stage-control,
+.rail-add,
+.topbar-plus,
+.project-name,
+.quiet-link {
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+.button:active:not(:disabled),
+.topbar-plus:active {
+  transform: translateY(1px);
+}
+.button:disabled {
+  box-shadow: none;
+}
+.rail-repo:hover {
+  box-shadow: 0 0 0 3px #ffffff12;
+}
+.rail-add:hover {
+  background: #ffffff08;
+}
+.studio-navigation > nav > a:hover:not(.active) {
+  color: var(--ink);
+}
+.tree-item:focus-visible {
+  outline-offset: -3px;
+}
+.stage-control {
+  min-width: 29px;
+  min-height: 29px;
+}
+.project-name:focus-visible {
+  border-radius: 3px;
+}
+.source-lines:focus-visible,
+.diff-code:focus-visible {
+  outline-offset: -3px;
+}
+.source-lines,
+.diff-code,
+.graph-scroll,
+.file-tree {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 35%, var(--line)) transparent;
+}
+.account-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid color-mix(in srgb, var(--blue) 17%, var(--line));
+  background: var(--blue-soft);
+  color: var(--blue);
+  border-radius: 50%;
+  font: 500 10px var(--display);
+  transition:
+    box-shadow 0.16s ease,
+    background 0.16s ease;
+}
+.account-trigger:hover {
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+.account-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 23px;
+  padding-bottom: 23px;
+  border-bottom: 1px solid var(--line);
+}
+.account-card > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 47px;
+  height: 47px;
+  border-radius: 50%;
+  color: var(--blue);
+  background: var(--blue-soft);
+  font: 500 16px var(--display);
+}
+.account-card strong {
+  font-size: 14px;
+  font-weight: 550;
+}
+.account-card p {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 6px;
+}
+.account-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.account-actions > a,
+.account-actions > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: left;
+}
+.account-actions > a:hover,
+.account-actions > button:hover {
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+.account-actions > .sign-out {
+  color: var(--danger);
+}
+.account-actions > .sign-out:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.account-note {
+  font-size: 10px;
+  line-height: 1.9;
+  color: var(--muted);
+  margin-top: 20px;
+}
+@media (max-width: 650px) {
+  .topbar-actions {
+    gap: 9px;
+  }
+  .account-trigger {
+    width: 29px;
+    height: 29px;
+    font-size: 9px;
+  }
+  .studio-navigation > nav {
+    scroll-padding: 12px;
+  }
+  .entry-page ~ .toast {
+    bottom: 24px;
+    left: 50%;
+  }
+}
+@media (max-width: 380px) {
+  .topbar .studio-label {
+    display: none;
+  }
+}

@@ -1,0 +1,33 @@
+**/target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db
+# Keep local credentials out of source control.
+.env
+.env.*
+!.env.example
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+.impeccable/review/
+
+frontend-previous/
+frontend/*.log
+# Server-managed repositories are runtime data, not project source.
+data/
+# Source snapshots made before learning-focused refactors.
+.learning-backups/
+tmp/
+output/pdf/*-preview/
+docs/*.log
+.vercel/
+**/.vercel/
+.vscode/
+.github/modernize/
+*.log
+sandbox/

@@ -1,0 +1,30 @@
+# Standalone Compose file: reuse PostgreSQL already running on this computer.
+# Does not start a database container or copy/migrate your existing database.
+services:
+  app:
+    image: arpandutta030705/customvcs-backend:latest
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - '127.0.0.1:8080:8080'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      CVCS_DB_URL: ${CVCS_DOCKER_DB_URL:-jdbc:postgresql://host.docker.internal:5432/customvcs}
+      CVCS_DB_USERNAME: ${CVCS_DB_USERNAME:?Set CVCS_DB_USERNAME in .env}
+      CVCS_DB_PASSWORD: ${CVCS_DB_PASSWORD:?Set CVCS_DB_PASSWORD in .env}
+      CVCS_STORAGE_ROOT: /app/data/repositories
+      CVCS_SECURE_COOKIES: ${CVCS_SECURE_COOKIES:-false}
+    volumes:
+      - ${CVCS_DOCKER_STORAGE_ROOT:-./data/repositories}:/app/data/repositories
+    restart: unless-stopped
+  frontend:
+    image: arpandutta030705/customvcs-frontend:latest
+    build:
+      context: ./frontend
+    ports:
+      - '127.0.0.1:3000:80'
+    depends_on:
+      - app
+    restart: unless-stopped
