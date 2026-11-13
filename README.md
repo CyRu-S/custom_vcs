@@ -95,3 +95,5 @@ Read [the complete workflow guide](docs/PROJECT-WORKFLOW.md), [verification resu
 PostgreSQL stores accounts and metadata; `data/repositories` stores working files and complete VCS history. Back up both together. Repositories created before authentication retain null ownership and are preserved but hidden; deliberate adoption instructions are in the workflow guide.
 
 This is a single-instance learning project. Remote push/pull/clone, password recovery/email verification, distributed locking and advanced production hardening remain extensions. Docker configuration is supplied, but public deployment is not performed automatically.
+
+Authors: Arpan Dutta (@CyRu-S)
